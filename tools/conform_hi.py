@@ -44,18 +44,41 @@ for name,(r,c) in grid.items():
     ins=int(min(mh,mw)*0.03); cell=cell[ins:mh-ins, ins:mw-ins]
     sprites[name]=np.array(img(cell).resize((128,128), Image.LANCZOS))
 
-# ---------- hero 3x3 (green bg + white cell frames) ----------
+# ---------- hero 3x3 (magenta bg; pre-normalized by tools/build_hero3x3.py) ----------
 h=load('hero_3x3.png'); H,W=h.shape[:2]; ch,cw=H//3,W//3
 dirs=['down','up','side']
 for r in range(3):
     for k in range(3):
         cell=h[r*ch:(r+1)*ch, k*cw:(k+1)*cw]
-        cell=despill_green(key_bg(cell,(112,149,45),tol=64))
+        cell=key_bg(cell,(213,60,139),tol=70,white=999)  # magenta key; white-frame off, no green despill
+        dm=np.sqrt(((cell[:,:,:3].astype(int)-np.array([213,60,139]))**2).sum(2))
+        cell[dm<45,3]=0                                   # clear enclosed magenta pockets (arm/body gaps)
         sprites[f'hero_{dirs[r]}_{k}']=fit_h(cell, 220)
 
 # ---------- well / tree (green bg + white frame) ----------
 sprites['well']=fit_h(despill_green(key_bg(load('well.png'),(137,162,87),tol=58)), 210)
 sprites['tree']=fit_h(despill_green(key_bg(load('tree.png'),(136,184,78),tol=58)), 230)
+
+# ---------- extra props (green bg) : HI-only additions (detail+2) ----------
+# each: (measured bg, tol, HI target height ~= 2x the base sprite)
+PROP_HI={
+    'shrine': ((145,160,80),  60, 150),
+    'torch':  ((104,153,102), 60, 130),
+    'house':  ((138,166,98),  60, 470),
+    'goblin': ((136,167,106), 48, 130),
+    'sentry': ((141,166,104), 48, 130),
+    'chief':  ((136,167,109), 48, 210),
+}
+for nm,(bg,tol,ht) in PROP_HI.items():
+    sprites[nm]=fit_h(despill_green(key_bg(load(nm+'.png'), bg, tol=tol)), ht)
+
+# idoor: door object on green bg -> keyed, output as a 128px square tile
+_idoor=despill_green(key_bg(load('idoor.png'),(126,159,100),tol=60))
+sprites['idoor']=np.array(img(crop(_idoor)).resize((128,128), Image.LANCZOS))
+
+# ---------- seamless interior tiles (no keying, full-bleed 128x128) ----------
+for nm in ('ifloor','iwall'):
+    sprites[nm]=np.array(img(load(nm+'.png')).resize((128,128), Image.LANCZOS))
 
 # ---------- pack atlas ----------
 pad=2; maxw=1024; x=y=pad; rowh=0; manifest={}; placed=[]
