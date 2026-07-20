@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Claude Code local settings (per-user, not repo-shared)
+.claude/settings.local.json
+
+# conform.py intermediate previews (keep atlas.png / manifest.json if committed)
+assets/hi/preview.png
