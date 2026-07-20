@@ -62,7 +62,6 @@ sprites['tree']=fit_h(despill_green(key_bg(load('tree.png'),(136,184,78),tol=58)
 # ---------- extra props (green bg) : HI-only additions (detail+2) ----------
 # each: (measured bg, tol, HI target height ~= 2x the base sprite)
 PROP_HI={
-    'shrine': ((145,160,80),  60, 150),
     'torch':  ((104,153,102), 60, 130),
     'house':  ((138,166,98),  60, 470),
     'goblin': ((136,167,106), 48, 130),
@@ -71,6 +70,17 @@ PROP_HI={
 }
 for nm,(bg,tol,ht) in PROP_HI.items():
     sprites[nm]=fit_h(despill_green(key_bg(load(nm+'.png'), bg, tol=tol)), ht)
+
+# ---------- shrine (magenta bg; tall art padded to a square cell) ----------
+# PROP['H'] draws into a square box, so pad the tall art instead of stretching it.
+SH_MAG=(228,44,124)
+_sh=key_bg(load('shrine.png'), SH_MAG, tol=70, white=999)   # white-frame off, no green despill
+_dm=np.sqrt(((_sh[:,:,:3].astype(int)-np.array(SH_MAG))**2).sum(2))
+_sh[_dm<45,3]=0                                             # enclosed magenta pockets
+_sh=fit_h(_sh, 150)
+_cell=np.zeros((150,150,4),np.uint8)                        # centre-x / bottom-align (blitAnchor)
+_x=(150-_sh.shape[1])//2; _cell[150-_sh.shape[0]:, _x:_x+_sh.shape[1]]=_sh
+sprites['shrine']=_cell
 
 # idoor: door object on green bg -> keyed, output as a 128px square tile
 _idoor=despill_green(key_bg(load('idoor.png'),(126,159,100),tol=60))
