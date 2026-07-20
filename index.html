@@ -1114,7 +1114,7 @@ function updateZoomUI(){
   document.getElementById('zoomOut').disabled = !canOut;
 }
 
-function startGame(){ hideFull('title'); resetParty(); initMaps(); // fresh maps -> enemies respawn each run
+function startGame(){ hideFull('title'); hideFull('over'); hideFull('win'); resetParty(); initMaps(); // fresh maps -> enemies respawn each run
   loadMap(VILLAGE); S.scene='map'; showPrep();
   dialogue('','洞窟のゴブリンが家畜を襲う。頭目を討ってくれ——。村で3つまで準備を整え、東の門から森へ。'); }
 function toTitle(){ hideFull('win'); hideAll(); S.scene='title'; show('title'); }
