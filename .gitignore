@@ -11,3 +11,6 @@ __pycache__/
 
 # conform.py intermediate previews (keep atlas.png / manifest.json if committed)
 assets/hi/preview.png
+
+# Tier A v3 generated reports (harness-only, not shared)
+tier_a_v3_*.json
